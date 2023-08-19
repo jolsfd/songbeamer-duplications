@@ -55,18 +55,12 @@ class UI:
         self.i = -1
         self.songs = []
 
-    def next(self):
-        # check if end is reached
-        if self.i == len(self.duplicates) - 1:
-            return
-
+    def update(self):
         # delete old widgets
         for song in self.songs:
             song.forget_btns()
 
         self.songs = []
-
-        self.i += 1
 
         # generate new widgets
         for j in range(len(self.duplicates[self.i])):
@@ -78,6 +72,15 @@ class UI:
 
         # update progress
         self.progress["text"] = f"{self.i+1} von {len(self.duplicates)}"
+
+    def next(self):
+        # check if end is reached
+        if self.i == len(self.duplicates) - 1:
+            return
+        
+        self.i += 1
+
+        self.update()
 
         return
 
@@ -85,24 +88,9 @@ class UI:
         if self.i <= 0:
             return
 
-        # delete old widgets
-        for song in self.songs:
-            song.forget_btns()
-
-        self.songs = []
-
         self.i -= 1
 
-        # generate new widgets
-        for j in range(len(self.duplicates[self.i])):
-            song = Song(self.duplicates, self.i, j)
-
-            song.build_btns()
-
-            self.songs.append(song)
-
-        # update progress
-        self.progress["text"] = f"{self.i+1} von {len(self.duplicates)}"
+        self.update()
 
         return
 
@@ -182,5 +170,6 @@ if __name__ == "__main__":
 
     # saving data persistent
     print("saving edited json...")
+
     duplications_filtered = filter_duplicates(ui.duplicates)
     duplications.save_duplicates(args.data_file, duplications_filtered)
