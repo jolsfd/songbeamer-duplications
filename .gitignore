@@ -1,0 +1,5 @@
+*.bin
+*.json
+venv
+songs
+*.pyc
