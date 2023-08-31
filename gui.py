@@ -1,14 +1,18 @@
 import tkinter as tk
-import duplications
+import similar
 import os
 import platform
 import argparse
 
 EDITOR_LINUX = "gnome-text-editor"
-EDITOR_WINDOWS = "edit"
+EDITOR_WINDOWS = "notepad.exe"
 EDITOR = ""
 
 BACKUP_DIR = os.path.join(os.getcwd(), "backup")
+
+# ensure the backup folder exists
+if not os.path.isdir(BACKUP_DIR):
+   os.makedirs(BACKUP_DIR)
 
 
 class Song:
@@ -161,7 +165,7 @@ if __name__ == "__main__":
     # initial object
     ui = UI()
 
-    ui.duplicates = duplications.read_duplicates(args.data_file)
+    ui.duplicates = similar.read_duplicates(args.data_file)
     ui.setup_ui()
     ui.next()
 
@@ -172,4 +176,4 @@ if __name__ == "__main__":
     print("saving edited json...")
 
     duplications_filtered = filter_duplicates(ui.duplicates)
-    duplications.save_duplicates(args.data_file, duplications_filtered)
+    similar.save_duplicates(args.data_file, duplications_filtered)

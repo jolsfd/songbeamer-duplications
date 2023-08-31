@@ -1,4 +1,4 @@
-import duplications
+import similar
 import argparse
 import os
 
@@ -32,32 +32,32 @@ if __name__ == "__main__":
         "--min",
         type=float,
         default=0.95,
-        help="inimum similarity to be found in percent",
+        help="minimum similarity to be found in percent",
     )
 
     args = parser.parse_args()
 
     # load model
-    model = duplications.load_model(args.model_file)
+    model = similar.load_model(args.model_file)
 
     print("Collecting song files...")
-    paths = duplications.collect_songs(args.dir)
+    paths = similar.collect_songs(args.dir)
 
     print("Reading song files...")
-    contents = duplications.read_songs(paths)
+    contents = similar.read_songs(paths)
 
     print("Computing vectors...")
-    songs, vectors = duplications.build_vectors(model, paths, contents)
+    songs, vectors = similar.build_vectors(model, paths, contents)
 
     print("Computing similarity...")
-    distance_matrix = duplications.compute_similarity(vectors)
+    distance_matrix = similar.compute_similarity(vectors)
 
     #print(distance_matrix)
 
     print("Displaying similar files...")
-    pairs = duplications.find_similar_songs(distance_matrix, songs, probability=args.min)
+    pairs = similar.find_similar_songs(distance_matrix, songs, probability=args.min)
 
     print("Saving duplicates to json...")
-    duplications.save_duplicates(args.output_file, pairs)
+    similar.save_duplicates(args.output_file, pairs)
 
-    duplications.display_similar_songs(pairs)
+    similar.display_similar_songs(pairs)

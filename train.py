@@ -1,5 +1,5 @@
 import argparse
-import duplications
+import similar
 import logging
 import os
 
@@ -49,15 +49,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("Collecting training data...")
-    training_data = duplications.collect_training_data(
+    training_data = similar.collect_training_data(
         args.training_dir, n_pick=args.pick_probability
     )
     print(len(training_data), "data files")
 
     print("Training model...")
-    model = duplications.train_model(
+    model = similar.train_model(
         training_data, vector_size=args.vector_size, epochs=args.epochs
     )
 
     print("Saving model...")
-    duplications.save_model(model, args.output_file)
+    similar.save_model(model, args.output_file)
