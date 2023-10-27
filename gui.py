@@ -119,12 +119,16 @@ class UI:
         return
 
     def open_all_editor(self):
-        raw = ""
+        # raw = ""
+
+        # for song in self.songs:
+        #     raw += f"'{song.path}' "
+
+        # os.popen(f"{EDITOR} {raw}")
 
         for song in self.songs:
-            raw += f"'{song.path}' "
+            song.open_editor()
 
-        os.popen(f"{EDITOR} {raw}")
         return
 
     def setup_ui(self):
