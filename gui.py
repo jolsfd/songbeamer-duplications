@@ -12,7 +12,7 @@ BACKUP_DIR = os.path.join(os.getcwd(), "backup")
 
 # ensure the backup folder exists
 if not os.path.isdir(BACKUP_DIR):
-   os.makedirs(BACKUP_DIR)
+    os.makedirs(BACKUP_DIR)
 
 
 class Song:
@@ -27,17 +27,23 @@ class Song:
         self.btn_delete = tk.Button(text="Delete", command=lambda: self.delete_song())
 
     def open_editor(self):
-        os.popen(f"{EDITOR} '{self.path}'")
+        os.popen(f'{EDITOR} "{self.path}"')
         return
 
     def delete_song(self):
         counter = 0
-        new_path = os.path.join(BACKUP_DIR, os.path.basename(self.path))
+        basename = os.path.basename(self.path)
+        new_path = os.path.join(BACKUP_DIR, basename)
 
         while True:
             if os.path.exists(new_path):
                 counter += 1
-                new_path += str(counter)
+                new_path = os.path.join(
+                    BACKUP_DIR,
+                    os.path.splitext(basename)[0]
+                    + str(counter)
+                    + os.path.splitext(basename)[1],
+                )
                 continue
 
             break
@@ -49,8 +55,10 @@ class Song:
             print(f"an error occured while moving {self.path}")
             return
 
-        self.duplicates[self.i].remove(self.path)
+        # self.duplicates[self.i].remove(self.path)
+        self.remove_from_duplicates()
         self.forget_btns()
+
         return
 
     def forget_btns(self):
@@ -60,6 +68,9 @@ class Song:
     def build_btns(self):
         self.btn_open.grid(row=3, column=self.j)
         self.btn_delete.grid(row=4, column=self.j)
+
+    def remove_from_duplicates(self):
+        self.duplicates[self.i].remove(self.path)
 
 
 class UI:
@@ -90,7 +101,7 @@ class UI:
         # check if end is reached
         if self.i == len(self.duplicates) - 1:
             return
-        
+
         self.i += 1
 
         self.update()
