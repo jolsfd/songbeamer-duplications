@@ -131,6 +131,14 @@ class UI:
 
         return
 
+    def ignore(self):
+        for song in self.songs:
+            song.remove_from_duplicates()
+
+        self.next()
+
+        return
+
     def setup_ui(self):
         # generate widgets
         self.progress = tk.Label(text="")
@@ -139,12 +147,14 @@ class UI:
         )
         self.btn_next = tk.Button(text="Next", command=lambda: self.next())
         self.btn_back = tk.Button(text="Back", command=lambda: self.back())
+        self.btn_ignore = tk.Button(text="Ignore", command=lambda: self.ignore())
 
         # place widgets
         self.progress.grid(row=0, column=0)
         self.btn_open_all.grid(row=0, column=1)
         self.btn_next.grid(row=0, column=3)
         self.btn_back.grid(row=0, column=2)
+        self.btn_ignore.grid(row=0, column=4)
 
 
 def filter_duplicates(duplicates):
