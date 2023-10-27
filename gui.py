@@ -31,7 +31,16 @@ class Song:
         return
 
     def delete_song(self):
+        counter = 0
         new_path = os.path.join(BACKUP_DIR, os.path.basename(self.path))
+
+        while True:
+            if os.path.exists(new_path):
+                counter += 1
+                new_path += str(counter)
+                continue
+
+            break
 
         try:
             os.rename(self.path, new_path)
