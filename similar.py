@@ -223,27 +223,27 @@ def read_duplicates(filename: str):
     return duplicates
 
 
-if __name__ == "__main__":
-    model = load_model("./riesig.bin")
+# if __name__ == "__main__":
+#     model = load_model("./riesig.bin")
 
-    print("Collecting song files...")
-    paths = collect_songs("./Songs")
+#     print("Collecting song files...")
+#     paths = collect_songs("./Songs")
 
-    print("Reading song files...")
-    contents = read_songs(paths)
+#     print("Reading song files...")
+#     contents = read_songs(paths)
 
-    print("Computing vectors...")
-    songs, vectors = build_vectors(model, paths, contents)
+#     print("Computing vectors...")
+#     songs, vectors = build_vectors(model, paths, contents)
 
-    print("Computing similarity...")
-    distance_matrix = compute_similarity(vectors)
+#     print("Computing similarity...")
+#     distance_matrix = compute_similarity(vectors)
 
-    # print(distance_matrix)
+#     # print(distance_matrix)
 
-    print("Displaying similar files...")
-    pairs = find_similar_songs(distance_matrix, songs)
+#     print("Displaying similar files...")
+#     pairs = find_similar_songs(distance_matrix, songs)
 
-    print("Saving duplicates to json...")
-    save_duplicates("out.json", pairs)
+#     print("Saving duplicates to json...")
+#     save_duplicates("out.json", pairs)
 
-    display_similar_songs(pairs)
+#     display_similar_songs(pairs)
