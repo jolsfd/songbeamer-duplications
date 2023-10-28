@@ -47,7 +47,7 @@ if __name__ == "__main__":
     contents = similar.read_songs(paths)
 
     print("Computing vectors...")
-    songs, vectors = similar.build_vectors(model, paths, contents)
+    songs, vectors = similar.build_vectors_pool(model, paths, contents)
 
     print("Computing similarity...")
     distance_matrix = similar.compute_similarity(vectors)

@@ -56,7 +56,9 @@ def read_song_corpus(filename: str, reading_chars="---") -> List[str]:
     return gensim.utils.simple_preprocess(output)
 
 
-def collect_training_data(root: str, n_pick=0.035, extension=".sng") -> List[gensim.models.doc2vec.TaggedDocument]:
+def collect_training_data(
+    root: str, n_pick=0.035, extension=".sng"
+) -> List[gensim.models.doc2vec.TaggedDocument]:
     train_corpus = []
 
     for root_dir, dirs, files in os.walk(root):
@@ -86,8 +88,8 @@ def train_model(
     )
 
     model.build_vocab(train_corpus)
-    #print(f"Word 'jesus' appeared {model.wv.get_vecattr('jesus', 'count')} times in the training corpus.")
-    #print(f"Word 'gott' appeared {model.wv.get_vecattr('gott', 'count')} times in the training corpus.")
+    # print(f"Word 'jesus' appeared {model.wv.get_vecattr('jesus', 'count')} times in the training corpus.")
+    # print(f"Word 'gott' appeared {model.wv.get_vecattr('gott', 'count')} times in the training corpus.")
 
     model.train(train_corpus, total_examples=model.corpus_count, epochs=model.epochs)
 
@@ -141,6 +143,21 @@ def build_vectors(model, paths, contents):
     return songs, vectors
 
 
+def build_vectors_pool(model, paths, contents, processes=4, chunksize=30):
+    songs = {}
+    vectors = np.empty([len(paths), model.vector_size])
+
+    with mp.Pool(processes) as pool:
+        computed_vectors = pool.map(model.infer_vector, contents, chunksize)
+
+        for i in range(len(computed_vectors)):
+            vectors[i] = computed_vectors[i]
+
+            songs[i] = Song(paths[i], computed_vectors[i])
+
+    return songs, vectors
+
+
 def save_model(model, filename: str):
     with open(filename, "wb") as f:
         pickle.dump(model, f)
@@ -189,19 +206,22 @@ def find_similar_songs(distance_matrix, songs_dict, probability=0.95):
 
     return duplicates
 
+
 def save_duplicates(filename: str, data):
     json_object = json.dumps(data, indent=2)
- 
+
     with open(filename, "w") as f:
         f.write(json_object)
 
     return
+
 
 def read_duplicates(filename: str):
     with open(filename, "r") as f:
         duplicates = json.load(f)
 
     return duplicates
+
 
 if __name__ == "__main__":
     model = load_model("./riesig.bin")
@@ -218,7 +238,7 @@ if __name__ == "__main__":
     print("Computing similarity...")
     distance_matrix = compute_similarity(vectors)
 
-    #print(distance_matrix)
+    # print(distance_matrix)
 
     print("Displaying similar files...")
     pairs = find_similar_songs(distance_matrix, songs)
