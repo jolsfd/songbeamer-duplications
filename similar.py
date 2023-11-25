@@ -31,18 +31,18 @@ def is_separator(line, chars="---"):
     return False
 
 
-def read_song_corpus(filename: str, reading_chars="---") -> str:
+def read_song_corpus(filename: str) -> str:
     with open(filename, "r", encoding="ISO-8859-1") as f:
         output = ""
         reading = False
 
         for line in f:
-            if reading and not is_separator(line):
+            if reading:
                 # output += line.rstrip("\n") + " "  # only right rstrip("\n")
                 output += line
                 continue
 
-            if line[: len(reading_chars)] == reading_chars:
+            if is_separator(line):
                 reading = True
 
     return output
@@ -55,6 +55,7 @@ def read_song_corpus_normalized(filename: str) -> str:
 
 def read_song_corpus_tokens(filename: str) -> List[str]:
     raw_corpus = read_song_corpus(filename)
+
     raw_corpus.replace("\n", " ")
     raw_corpus.replace("-", "")
 

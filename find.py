@@ -2,6 +2,32 @@ import similar
 import argparse
 import os
 
+def find(model_file, dir, output_file, min=0.95):
+    # load model
+    model = similar.load_model(model_file)
+
+    print("Collecting song files...")
+    paths = similar.collect_songs(dir)
+
+    print("Reading song files...")
+    contents = similar.read_songs(paths)
+
+    print("Computing vectors...")
+    songs, vectors = similar.build_vectors_pool(model, paths, contents)
+
+    print("Computing similarity...")
+    distance_matrix = similar.compute_similarity(vectors)
+
+    #print(distance_matrix)
+
+    print("Displaying similar files...")
+    pairs = similar.find_similar_songs(distance_matrix, songs, probability=min)
+
+    print("Saving duplicates to json...")
+    similar.save_duplicates(output_file, pairs)
+
+    similar.display_similar_songs(pairs)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="Find similar songs from in a directory", description=""
