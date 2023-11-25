@@ -43,7 +43,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--pick_probability",
         type=float,
-        default=1,
+        default=0.05, #0.035
     )
 
     args = parser.parse_args()
