@@ -31,29 +31,47 @@ def is_separator(line, chars="---"):
     return False
 
 
-def read_song_corpus(filename: str, reading_chars="---") -> List[str]:
-    """Reads a .sng file and returns only the songtext.
-
-    Args:
-        filename: The name of the text file to read.
-
-    Returns:
-        The entire content of the text file as a string, with newline characters removed.
-    """
-
+def read_song_corpus(filename: str, reading_chars="---") -> str:
     with open(filename, "r", encoding="ISO-8859-1") as f:
         output = ""
         reading = False
 
         for line in f:
             if reading and not is_separator(line):
-                output += line.rstrip("\n") + " "  # only right rstrip("\n")
+                # output += line.rstrip("\n") + " "  # only right rstrip("\n")
+                output += line
                 continue
 
             if line[: len(reading_chars)] == reading_chars:
                 reading = True
 
-    return gensim.utils.simple_preprocess(output)
+    return output
+    # return gensim.utils.simple_preprocess(output)
+
+
+def read_song_corpus_normalized(filename: str) -> str:
+    return read_song_corpus(filename).replace(" ", "")
+
+
+def read_song_corpus_tokens(filename: str) -> List[str]:
+    raw_corpus = read_song_corpus(filename)
+    raw_corpus.replace("\n", " ")
+    raw_corpus.replace("-", "")
+
+    return gensim.utils.simple_preprocess(raw_corpus)
+
+
+def count_metadata_lines(filename: str, reading_chars="---") -> int:
+    lines_count = 0
+
+    with open(filename, "r", encoding="ISO-8859-1") as f:
+        for line in f:
+            if line == reading_chars:
+                break
+
+            lines_count += 1
+
+    return lines_count
 
 
 def collect_training_data(
@@ -71,7 +89,7 @@ def collect_training_data(
 
             path = os.path.join(root_dir, filename)
 
-            tokens = read_song_corpus(path)
+            tokens = read_song_corpus_tokens(path)
 
             train_corpus.append(
                 gensim.models.doc2vec.TaggedDocument(tokens, [filename])
@@ -125,7 +143,7 @@ def collect_songs(root: str, extension=".sng"):
 def read_songs(paths):
     with mp.Pool(processes=4) as pool:
         # Read the content of each file
-        contents = pool.map(read_song_corpus, paths)
+        contents = pool.map(read_song_corpus_tokens, paths)
 
     return contents
 
@@ -216,11 +234,42 @@ def save_duplicates(filename: str, data):
     return
 
 
-def read_duplicates(filename: str):
+def read_duplicates(filename: str, create_file=True):
+    if create_file:
+        # ensure the file exists
+        if not os.path.isfile(filename):
+            with open(filename, "w") as f:
+                f.write(json.dumps([[]]))
+
     with open(filename, "r") as f:
         duplicates = json.load(f)
 
     return duplicates
+
+def delete_song(path: str, backup_dir: str):
+    counter = 0
+    basename = os.path.basename(path)
+    new_path = os.path.join(backup_dir, basename)
+
+    while True:
+        if os.path.exists(new_path):
+            counter += 1
+            new_path = os.path.join(
+                backup_dir,
+                os.path.splitext(basename)[0]
+                + str(counter)
+                + os.path.splitext(basename)[1],
+            )
+            continue
+
+        break
+
+    try:
+        os.rename(path, new_path)
+
+    except:
+        print(f"an error occured while moving {path}")
+        return
 
 
 # if __name__ == "__main__":
